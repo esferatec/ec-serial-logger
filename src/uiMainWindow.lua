@@ -1,4 +1,5 @@
 local app = require("resources.app")
+
 local serialex = require("ecluart.serialextension")
 local ui = require("ui")
 local uiex = require("ecluart.uiextension")
@@ -14,11 +15,6 @@ local function isNotEmpty(value)
   return not string.isempty(value)
 end
 
-local function isNotWhitespace(value)
-  value = string.trim(value)
-  return not string.iswhitespace(value)
-end
-
 local function isNotNil(value)
   return not isnil(value)
 end
@@ -27,28 +23,46 @@ end
 
 --#region Window
 
-local Window = ui.Window("ecSerialLogger", "dialog", 600, 320)
+local Window = ui.Window("ecSerialMonitor", "dialog", 600, 320)
 Window.minwidth = 600
 Window.minheight = 320
 Window.title = app.NAME .. " - " .. app.VERSION
+Window:center()
+
+--#endregion
+
+--#region Methodes
+
+function Window:checksize()
+  if self.height == 0 or self.width == 0 then
+    return
+  end
+
+  if self.height < self.minheight then
+    self.height = self.minheight
+  end
+
+  if self.width < self.minwidth then
+    self.width = self.minwidth
+  end
+end
 
 --#endregion
 
 --#region Widgets TOP
 
 local PortLabel = ui.Label(Window, "Port:")
-local PortCombobox = ui.Combobox(Window, false, { "COM5" })
+local PortCombobox = ui.Combobox(Window, false, {})
 local UpdateButton = ui.Button(Window, "Update")
 local StartButton = ui.Button(Window, "Start")
 local StopButton = ui.Button(Window, "Stop")
 local ClearButton = ui.Button(Window, "Clear")
-local SaveButton = ui.Button(Window, "Save")
 
 --#endregion
 
 --#region Widgets BOTTOM
 
-local LogFileEntry = uiex.FileEntry(Window, "", 0, 0, 580, 22)
+local LogFileLabel = uiex.FileLabel(Window, "", 0, 0, 580, 22)
 
 --#endregion
 
@@ -88,14 +102,13 @@ Window.GM_TOP:add(UpdateButton, gm.ALIGNMENT.Center)
 Window.GM_TOP:add(StartButton, gm.ALIGNMENT.Center)
 Window.GM_TOP:add(StopButton, gm.ALIGNMENT.Center)
 Window.GM_TOP:add(ClearButton, gm.ALIGNMENT.Center)
-Window.GM_TOP:add(SaveButton, gm.ALIGNMENT.Center)
 
 --#endregion
 
 --#region GeometryManager BOTTOM
 
 Window.GM_BOTTOM = gm.GeometryManager():BottomLayout(Window, gm.DIRECTION.Left, 10, { 10, 10, 10, 10 }, 30)
-Window.GM_BOTTOM:add(LogFileEntry, gm.ALIGNMENT.Center)
+Window.GM_BOTTOM:add(LogFileLabel, gm.ALIGNMENT.Center)
 
 --#endregion
 
@@ -134,34 +147,32 @@ Window.WM:add(BaudrateCombobox, "BaudrateCombobox")
 Window.WM:add(BytesizeCombobox, "BytesizeCombobox")
 Window.WM:add(ClearButton, "ClearButton")
 Window.WM:add(DTRModeCombobox, "DTRModeCombobox")
-Window.WM:add(LogFileEntry, "LogFileEntry")
 Window.WM:add(OutputEdit, "OutputEdit")
 Window.WM:add(ParityCombobox, "ParityCombobox")
 Window.WM:add(PortCombobox, "PortCombobox")
 Window.WM:add(RTSModeCombobox, "RTSModeCombobox")
-Window.WM:add(SaveButton, "SaveButton")
 Window.WM:add(StartButton, "StartButton")
 Window.WM:add(StopbitsCombobox, "StopbitsCombobox")
 Window.WM:add(StopButton, "StopButton")
 Window.WM:add(UpdateButton, "UpdateButton")
+Window.WM:add(LogFileLabel, "LogFileLabel")
 
 --#endregion
 
---#region WidgetManager PORT
+--#region WidgetManager STANDARD
 
-Window.WM_PORT = wm.WidgetManager()
-Window.WM_PORT:add(BaudrateCombobox, "BaudrateCombobox")
-Window.WM_PORT:add(BytesizeCombobox, "BytesizeCombobox")
-Window.WM_PORT:add(ClearButton, "ClearButton")
-Window.WM_PORT:add(DTRModeCombobox, "DTRModeCombobox")
-Window.WM_PORT:add(LogFileEntry, "LogFileEntry")
-Window.WM_PORT:add(ParityCombobox, "ParityCombobox")
-Window.WM_PORT:add(RTSModeCombobox, "RTSModeCombobox")
-Window.WM_PORT:add(SaveButton, "SaveButton")
-Window.WM_PORT:add(StartButton, "StartButton")
-Window.WM_PORT:add(StopbitsCombobox, "StopbitsCombobox")
-Window.WM_PORT:add(StopButton, "StopButton")
-Window.WM_PORT:add(OutputEdit, "OutputEdit")
+Window.WM_STANDARD = wm.WidgetManager()
+Window.WM_STANDARD:add(BaudrateCombobox, "BaudrateCombobox")
+Window.WM_STANDARD:add(BytesizeCombobox, "BytesizeCombobox")
+Window.WM_STANDARD:add(DTRModeCombobox, "DTRModeCombobox")
+Window.WM_STANDARD:add(OutputEdit, "OutputEdit")
+Window.WM_STANDARD:add(ParityCombobox, "ParityCombobox")
+Window.WM_STANDARD:add(PortCombobox, "PortCombobox")
+Window.WM_STANDARD:add(RTSModeCombobox, "RTSModeCombobox")
+Window.WM_STANDARD:add(StartButton, "StartButton")
+Window.WM_STANDARD:add(StopbitsCombobox, "StopbitsCombobox")
+Window.WM_STANDARD:add(UpdateButton, "UpdateButton")
+Window.WM_STANDARD:add(LogFileLabel, "LogFileLabel")
 
 --#endregion
 
@@ -170,33 +181,14 @@ Window.WM_PORT:add(OutputEdit, "OutputEdit")
 Window.WM_START = wm.WidgetManager()
 Window.WM_START:add(BaudrateCombobox, "BaudrateCombobox")
 Window.WM_START:add(BytesizeCombobox, "BytesizeCombobox")
-Window.WM_START:add(ClearButton, "ClearButton")
 Window.WM_START:add(DTRModeCombobox, "DTRModeCombobox")
-Window.WM_START:add(LogFileEntry, "LogFileEntry")
 Window.WM_START:add(ParityCombobox, "ParityCombobox")
 Window.WM_START:add(PortCombobox, "PortCombobox")
 Window.WM_START:add(RTSModeCombobox, "RTSModeCombobox")
-Window.WM_START:add(SaveButton, "SaveButton")
-Window.WM_START:add(SaveButton, "SaveButton")
 Window.WM_START:add(StartButton, "StartButton")
 Window.WM_START:add(StopbitsCombobox, "StopbitsCombobox")
 Window.WM_START:add(UpdateButton, "UpdateButton")
-
---#endregion
-
---#region WidgetManager SAVE
-
-Window.WM_SAVE = wm.WidgetManager()
-Window.WM_SAVE:add(SaveButton, "SaveButton")
-
---#endregion
-
---#region WidgetManager CLEAR
-
-Window.WM_CLEAR = wm.WidgetManager()
-Window.WM_CLEAR:add(ClearButton, "ClearButton")
-Window.WM_CLEAR:add(OutputEdit, "OutputEdit")
---Window.WM_CLEAR:add(SaveButton, "SaveButton")
+Window.WM_START:add(LogFileLabel, "LogFileLabel")
 
 --#endregion
 
@@ -207,18 +199,39 @@ Window.WM_STOP:add(StopButton, "StopButton")
 
 --#endregion
 
---#region WidgetManager RESIZE
+--#region WidgetManager PORT
 
-Window.WM_RESIZE = wm.WidgetManager()
-Window.WM_RESIZE:add(LogFileEntry, "LogFileEntry")
+Window.WM_PORT = wm.WidgetManager()
+Window.WM_PORT:add(BaudrateCombobox, "BaudrateCombobox")
+Window.WM_PORT:add(BytesizeCombobox, "BytesizeCombobox")
+Window.WM_PORT:add(DTRModeCombobox, "DTRModeCombobox")
+Window.WM_PORT:add(ParityCombobox, "ParityCombobox")
+Window.WM_PORT:add(RTSModeCombobox, "RTSModeCombobox")
+Window.WM_PORT:add(StartButton, "StartButton")
+Window.WM_PORT:add(StopbitsCombobox, "StopbitsCombobox")
+Window.WM_PORT:add(OutputEdit, "OutputEdit")
+Window.WM_PORT:add(LogFileLabel, "LogFileLabel")
 
 --#endregion
 
---#region ValidationManager SAVE
+--#region WidgetManager STFILEOP
 
-Window.VM_SAVE = vm.ValidationManager()
-Window.VM_SAVE:add(LogFileEntry, "text", isNotEmpty, "is empty")
-Window.VM_SAVE:add(LogFileEntry, "text", isNotWhitespace, "is whitespace")
+Window.WM_FILE = wm.WidgetManager()
+Window.WM_FILE:add(StartButton, "StartButton")
+
+--#endregion
+
+--#region WidgetManager CLEAR
+
+Window.WM_CLEAR = wm.WidgetManager()
+Window.WM_CLEAR:add(ClearButton, "ClearButton")
+
+--#endregion
+
+--#region WidgetManager RESIZE
+
+Window.WM_RESIZE = wm.WidgetManager()
+Window.WM_RESIZE:add(LogFileLabel, "LogFileLabel")
 
 --#endregion
 
@@ -236,8 +249,14 @@ Window.VM_PORT:add(PortCombobox, "selected", isNotNil, "is nil")
 
 --#endregion
 
+--#region ValidationManager FILE
+
+Window.VM_FILE = vm.ValidationManager()
+Window.VM_FILE:add(LogFileLabel, "text", isNotEmpty, "is empty")
+
+--#endregion
+
 Window.ButtonClear = ClearButton
-Window.ButtonSave = SaveButton
 Window.ButtonStart = StartButton
 Window.ButtonStop = StopButton
 Window.ButtonUpdate = UpdateButton
@@ -250,6 +269,6 @@ Window.ComboboxRTSMode = RTSModeCombobox
 Window.ComboboxStopbits = StopbitsCombobox
 Window.EditOutput = OutputEdit
 Window.HyperLinkHelp = HelpHyperLink
-Window.FileEntryLog = LogFileEntry
+Window.FileLabelLog = LogFileLabel
 
 return Window

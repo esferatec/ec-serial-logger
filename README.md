@@ -1,17 +1,11 @@
 # ecSerialLogger
 
-The ecSerialLogger application is a specialized tool for monitoring and logging communication via serial COM ports.
-The received data can be saved in a text file.
+This application serves as a user interface for logging serial port communication. It allows users to select various parameters such as baud rate, byte size, DTR mode, parity, RTS mode, and stop bits, facilitating the configuration and monitoring of serial connections. The application is designed to provide a seamless experience for users interacting with serial devices, ensuring efficient data transmission and error handling.
+
+![](img/Screenshot-090930.png)
 
 > [!CAUTION]
 > This application is still in the development stage.
 
 > [!NOTE]
 It was developed in [Lua](https://www.lua.org/) with the help of the windows programming framework [LuaRT](https://www.luart.org/).
-
-> [!IMPORTANT]
-> Known pugs: The baudrate and bytesize always have the same value.
-
-![](img/Screenshot-181154.png)
-
-![](img/Screenshot-181254.png)

@@ -1,5 +1,5 @@
 -- Provides various extension serial functions.
-local serialextension = {}
+local serialextension     = {}
 
 -- Default values for serial communication settings.
 serialextension.DEFAULTS  = {
@@ -7,7 +7,7 @@ serialextension.DEFAULTS  = {
   bytesize = 4,
   parity = "none",
   stopbits = "one",
-  dtrmode = "off",
+  dtrmode = "disabled",
   rtsmode = "off"
 }
 
@@ -47,8 +47,8 @@ serialextension.stopbits  = {
 
 -- List of supported DTR (Data Terminal Ready) modes.
 serialextension.dtrmode   = {
-  "on",
-  "off",
+  "enabled",
+  "disabled",
   "handshake"
 }
 

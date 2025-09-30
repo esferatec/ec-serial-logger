@@ -1,28 +1,20 @@
 local sys = require("sys")
 
-local app = {}
-
-app.NAME = "ecSerialLogger"
-app.VERSION = "0.0.1"
-app.WEBSITE = "https://github.com/esferatec/ec-serial-logger"
-app.COPYRIGHT = "(c) 2025"
-app.DEVELOPER = "esferatec"
-
-app.ARGUMENT = arg[1]
-
-app.FILE = {
-  path = sys.File(arg[0] or arg[-1]).path,
-  name = sys.File(arg[0] or arg[-1]).name
-}
-
-app.TITLE = {
-  about = app.NAME .. " - About",
-  confirmation = app.NAME .. " - Confirmation",
-  error = app.NAME .. " - Error",
-  information = app.NAME .. "- Information ",
-  setup = app.NAME .. " - Setup",
-  select = app.NAME .. " - Select",
-  warning = app.NAME .. " - Warning",
+local app = {
+    NAME = "ecSerialLogger",
+    VERSION = "0.1.0",
+    WEBSITE = "https://github.com/esferatec/ec-serial-logger",
+    COPYRIGHT = "(c) 2025",
+    DEVELOPER = "esferatec",
+    TITLE = {
+        about = "ecSerialLogger - About",
+        confirmation = "ecSerialLogger - Confirmation",
+        error = "ecSerialLogger - Error",
+        information = "ecSerialLogger - Information",
+        setup = "ecSerialLogger - Setup",
+        select = "ecSerialLogger - Select",
+        warning = "ecSerialLogger - Warning"
+    }
 }
 
 return app
