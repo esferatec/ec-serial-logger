@@ -99,7 +99,7 @@ function WIN.ButtonStart:onClick()
 
       if COM then
         if data then
-          WIN.EditOutput:append(tostring(data) .. " : " .. os.date())
+          WIN.EditOutput:append(os.date() .. " : " .. tostring(data))
         else
           ui.error("Error reading port.", APP.TITLE.error)
           WIN.EditOutput.text = ""
